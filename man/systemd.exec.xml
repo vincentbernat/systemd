@@ -1348,6 +1348,23 @@
                                 <citerefentry><refentrytitle>tmpfiles.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>.</para></listitem>
                         </varlistentry>
 
+                        <varlistentry>
+                                <term><varname>BindToVRF=</varname></term>
+
+                                <listitem><para>Takes a VRF name. If
+                                set, the process executed by the unit
+                                will be started in a the control group
+                                associated with the given VRF. If the
+                                control group doesn't exist, the unit
+                                will fail to start. An implicit
+                                requirement is added to
+                                <literal>networking.service</literal>
+                                and
+                                <literal>network-online.target</literal>
+                                units. This is specific to Cumulus
+                                Linux.</para></listitem>
+                        </varlistentry>
+
                 </variablelist>
         </refsect1>
 

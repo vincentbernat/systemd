@@ -120,3 +120,6 @@
 #define SPECIAL_USER_SLICE "user.slice"
 #define SPECIAL_MACHINE_SLICE "machine.slice"
 #define SPECIAL_ROOT_SLICE "-.slice"
+
+/* Others */
+#define SPECIAL_NETWORKING_SERVICE "networking.service"

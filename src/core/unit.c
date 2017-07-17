@@ -724,6 +724,28 @@ int unit_add_exec_dependencies(Unit *u, ExecContext *c) {
                         return r;
         }
 
+        if (c->vrf) {
+                /* TODO: ideally, we could just do that. However,
+                 * while the device is present, the cgroup may not be
+                 * configured properly. We could configure it
+                 * ourselves, but we may run in a race condition
+                 * somewhere. It's just easier to wait for
+                 * networking.service to be ready. */
+#if 0
+                char *dep = strjoin("sys-subsystem-net-devices-", c->vrf, ".device", NULL);
+                r = unit_add_dependency_by_name(u, UNIT_AFTER, dep, NULL, true);
+                free(dep);
+                if (r < 0)
+                        return r;
+#endif
+                r = unit_add_dependency_by_name(u, UNIT_AFTER, SPECIAL_NETWORK_ONLINE_TARGET, NULL, true);
+                if (r < 0)
+                        return r;
+                r = unit_add_dependency_by_name(u, UNIT_AFTER, SPECIAL_NETWORKING_SERVICE, NULL, true);
+                if (r < 0)
+                        return r;
+        }
+
         if (u->manager->running_as != SYSTEMD_SYSTEM)
                 return 0;
 

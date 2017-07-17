@@ -1481,6 +1481,14 @@ int exec_spawn(ExecCommand *command,
                 if (context->utmp_id)
                         utmp_put_init_process(context->utmp_id, getpid(), getsid(0), context->tty_path);
 
+                if (context->vrf) {
+                        err = cg_attach("l3mdev", context->vrf, 0);
+                        if (err < 0) {
+                                r = EXIT_CGROUP;
+                                goto fail_child;
+                        }
+                }
+
                 if (context->user) {
                         username = context->user;
                         err = get_user_creds(&username, &uid, &gid, &home, &shell);
@@ -1914,6 +1922,9 @@ void exec_context_done(ExecContext *c) {
 
         strv_free(c->runtime_directory);
         c->runtime_directory = NULL;
+
+        free(c->vrf);
+        c->vrf = NULL;
 }
 
 int exec_context_destroy_runtime_directory(ExecContext *c, const char *runtime_prefix) {
@@ -2304,6 +2315,11 @@ void exec_context_dump(ExecContext *c, FILE* f, const char *prefix) {
                 fprintf(f,
                         "%sPersonality: %s\n",
                         prefix, strna(personality_to_string(c->personality)));
+
+        if (c->vrf)
+                fprintf(f,
+                        "%sBindToVRF: %s\n",
+                        prefix, c->vrf);
 
         if (c->syscall_filter) {
 #ifdef HAVE_SECCOMP

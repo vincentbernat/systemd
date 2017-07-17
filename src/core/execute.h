@@ -182,6 +182,8 @@ struct ExecContext {
         char **runtime_directory;
         mode_t runtime_directory_mode;
 
+        char *vrf;
+
         bool oom_score_adjust_set:1;
         bool nice_set:1;
         bool ioprio_set:1;
